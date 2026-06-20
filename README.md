@@ -4,22 +4,9 @@
 
 ## 脚本列表
 
-| 脚本 | 说明 |
-|------|------|
-| [debian-vps-setup](./scripts/debian-vps-setup/) | Debian VPS 安全加固 — SSH 端口、密钥登录、fail2ban、BBR、Swap 等 |
-
-## 快速使用
-
-```bash
-# 查看所有脚本
-ls scripts/
-
-# 查看某个脚本的说明
-cat scripts/<脚本名>/README.md
-
-# 直接拉取执行
-curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/<脚本目录>/<脚本文件> -o <脚本文件> && bash <脚本文件>
-```
+| 脚本 | 说明 | 一键拉取 |
+|------|------|---------|
+| [debian-vps-setup](./scripts/debian-vps-setup/) | Debian VPS 安全加固 — SSH 端口、密钥登录、fail2ban、BBR、Swap 等 | `curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh && bash setup.sh` |
 
 ## 添加新脚本
 

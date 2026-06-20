@@ -23,7 +23,7 @@ set -euo pipefail
 # 内建公钥 (脚本自带，批量部署时无需手动粘贴)
 # 如需更换密钥，替换下面这行即可
 # ============================================================
-BUILTIN_PUB_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOdqhswdvnpZMOdvGfPDn4tl/tSaf5NAi7AhytRCy1An mickey"
+BUILTIN_PUB_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE96bq+EhMro5cvK830swmtMf4qNPJH14nTdd+UO4sjk mickey"
 
 # ============================================================
 # 颜色与工具函数

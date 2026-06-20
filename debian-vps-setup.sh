@@ -5,11 +5,10 @@
 # 用法: bash debian-vps-setup.sh [--dry-run]
 #
 # 功能:
-#   1. 自定义 SSH 端口 + 禁用密码登录 + 仅密钥登录 (root)
+#   1. SSH 端口 2222 + 禁用密码登录 + 仅密钥登录 (root)
 #   2. fail2ban 防暴力破解
-#   3. 自动安全更新 (unattended-upgrades)
-#   4. Swap 自动创建 (小内存 VPS)
-#   5. 时区设置 + sysctl TCP 调优
+#   3. Swap 自动创建 (小内存 VPS)
+#   4. 时区设置 + sysctl TCP 调优
 #
 # ⚠️  重要提醒:
 #   - 执行前请确保你有 VPS 控制台备用访问方式 (VNC/Console)
@@ -20,10 +19,9 @@
 set -euo pipefail
 
 # ============================================================
-# 内建公钥 (脚本自带，批量部署时无需手动粘贴)
-# 如需更换密钥，替换下面这行即可
-# ============================================================
+# 内建公钥 — 如需更换密钥，替换下面这行即可
 BUILTIN_PUB_KEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE96bq+EhMro5cvK830swmtMf4qNPJH14nTdd+UO4sjk mickey"
+SSH_PORT=2222
 
 # ============================================================
 # 颜色与工具函数
@@ -76,80 +74,28 @@ check_distro() {
 }
 
 # ============================================================
-# 步骤 1: 交互式信息收集
+# 步骤 1: 初始化配置
 # ============================================================
-collect_info() {
-    log_step "步骤 1/7: 信息收集"
+init_config() {
+    log_step "步骤 1/6: 初始化"
 
-    # SSH 端口
-    read -rp "请输入新的 SSH 端口号 [默认: 2222]: " SSH_PORT
-    SSH_PORT="${SSH_PORT:-2222}"
-    if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || (( SSH_PORT < 1 || SSH_PORT > 65535 )); then
-        log_error "端口号无效: $SSH_PORT (应为 1-65535)"
-        exit 1
-    fi
-    if (( SSH_PORT == 22 )); then
-        log_error "新端口不能是 22，请选择其他端口"
-        exit 1
-    fi
-    log_info "SSH 端口: $SSH_PORT"
+    SSH_PORT=2222
+    PUB_KEY="$BUILTIN_PUB_KEY"
 
-    # 公钥 - 自动检测多种密钥类型
-    local auto_key_file=""
-    for keyfile in ~/.ssh/id_ed25519.pub ~/.ssh/id_rsa.pub ~/.ssh/id_ecdsa.pub; do
-        if [[ -f "$keyfile" ]]; then
-            auto_key_file="$keyfile"
-            break
-        fi
-    done
-
-    if [[ -n "$auto_key_file" ]]; then
-        PUB_KEY=$(cat "$auto_key_file")
-        log_info "已自动读取公钥 (${auto_key_file}): ${PUB_KEY:0:40}..."
-        read -rp "是否使用此公钥？[Y/n]: " use_auto_key
-        if [[ "${use_auto_key}" =~ ^[Nn]$ ]]; then
-            PUB_KEY=""
-        fi
-    fi
-
-    if [[ -z "${PUB_KEY:-}" ]]; then
-        log_info "使用脚本内建公钥: ${BUILTIN_PUB_KEY:0:50}..."
-        read -rp "是否使用内建公钥？[Y/n]: " use_builtin
-        if [[ "${use_builtin}" =~ ^[Nn]$ ]]; then
-            log_warn "请粘贴你的 SSH 公钥 (以 ssh-rsa / ssh-ed25519 开头):"
-            read -rp "> " PUB_KEY
-            if [[ -z "$PUB_KEY" ]]; then
-                log_error "公钥不能为空！"
-                exit 1
-            fi
-        else
-            PUB_KEY="$BUILTIN_PUB_KEY"
-        fi
-    fi
-
-    # 确认
-    echo ""
-    echo -e "${BOLD}配置确认:${NC}"
     echo -e "  SSH 端口:     ${CYAN}${SSH_PORT}${NC}"
     echo -e "  登录用户:     ${CYAN}root${NC}"
     echo -e "  公钥:         ${CYAN}${PUB_KEY:0:50}...${NC}"
     echo -e "  fail2ban:     ${CYAN}启用${NC}"
-    echo -e "  自动安全更新: ${CYAN}启用${NC}"
     echo -e "  Swap:         ${CYAN}自动 (≤2GB 内存时创建)${NC}"
     echo -e "  时区:         ${CYAN}Asia/Shanghai${NC}"
     echo ""
-    read -rp "确认以上配置并开始执行？[Y/n]: " go
-    if [[ "${go}" =~ ^[Nn]$ ]]; then
-        log_warn "用户取消操作"
-        exit 0
-    fi
 }
 
 # ============================================================
 # 步骤 2: 系统更新 + 基础工具
 # ============================================================
 update_system() {
-    log_step "步骤 2/7: 系统更新 & 安装基础工具"
+    log_step "步骤 2/6: 系统更新 & 安装基础工具"
 
     log_info "安装必要工具 (curl/wget)..."
     run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y curl wget"
@@ -168,7 +114,7 @@ update_system() {
 # 步骤 3: SSH 安全加固 (核心)
 # ============================================================
 harden_ssh() {
-    log_step "步骤 3/7: SSH 安全加固"
+    log_step "步骤 3/6: SSH 安全加固"
 
     local SSHD_CONF="/etc/ssh/sshd_config"
     local SSHD_CONF_DIR="/etc/ssh/sshd_config.d"
@@ -325,7 +271,7 @@ RESTOREEOF
 # 步骤 4: fail2ban
 # ============================================================
 setup_fail2ban() {
-    log_step "步骤 4/7: 安装配置 fail2ban"
+    log_step "步骤 4/6: 安装配置 fail2ban"
 
     log_info "安装 fail2ban..."
     run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y fail2ban"
@@ -362,34 +308,13 @@ F2BEOF
     log_info "fail2ban 已启用 (SSH 端口: ${SSH_PORT})"
 }
 
-# ============================================================
-# 步骤 5: 自动安全更新
-# ============================================================
-setup_auto_updates() {
-    log_step "步骤 5/7: 配置自动安全更新"
 
-    log_info "安装 unattended-upgrades..."
-    run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades apt-listchanges"
-
-    log_info "启用自动安全更新..."
-    run_cmd "dpkg-reconfigure -plow unattended-upgrades"
-
-    # 确保配置正确
-    if ! $DRY_RUN; then
-        cat > /etc/apt/apt.conf.d/20auto-upgrades <<'UUEOF'
-APT::Periodic::Update-Package-Lists "1";
-APT::Periodic::Unattended-Upgrade "1";
-APT::Periodic::AutocleanInterval "7";
-UUEOF
-    fi
-    log_info "自动安全更新已配置"
-}
 
 # ============================================================
 # 步骤 6: Swap (小内存 VPS)
 # ============================================================
 setup_swap() {
-    log_step "步骤 6/7: Swap 配置"
+    log_step "步骤 5/6: Swap 配置"
 
     # 检查是否已有 swap
     local current_swap
@@ -438,7 +363,7 @@ SWAPEOF
 # 步骤 7: 时区 + sysctl 优化
 # ============================================================
 setup_timezone_and_sysctl() {
-    log_step "步骤 7/7: 时区 & 系统参数优化"
+    log_step "步骤 6/6: 时区 & 系统参数优化"
 
     # 时区
     log_info "设置时区为 Asia/Shanghai..."
@@ -592,7 +517,7 @@ print_summary() {
     echo -e "  登录方式:     ${CYAN}密钥登录 (仅 root)${NC}"
     echo -e "  密码登录:     ${RED}已禁用${NC}"
     echo -e "  fail2ban:     ${GREEN}已启用${NC}"
-    echo -e "  自动更新:     ${GREEN}已启用${NC}"
+    echo -e "  自动更新:     ${CYAN}未启用${NC}"
     echo -e "  时区:         ${CYAN}Asia/Shanghai${NC}"
     echo ""
     echo -e "${BOLD}连接测试:${NC}"
@@ -626,11 +551,10 @@ main() {
 
     check_root
     check_distro
-    collect_info
+    init_config
     update_system
     harden_ssh
     setup_fail2ban
-    setup_auto_updates
     setup_swap
     setup_timezone_and_sysctl
     verify_setup

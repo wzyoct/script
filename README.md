@@ -6,7 +6,9 @@
 
 | 脚本 | 说明 | 一键拉取 |
 |------|------|---------|
-| [debian-vps-setup](./scripts/debian-vps-setup/) | Debian VPS 安全加固 — SSH 端口、密钥登录、fail2ban、BBR、Swap 等 | `curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh && bash setup.sh` |
+| [debian-vps-setup](./scripts/debian-vps-setup/) | Debian VPS 安全加固 — SSH 端口、密钥登录、fail2ban、BBR、Swap 等 | `curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh || wget -O setup.sh https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh && bash setup.sh` |
+
+> 💡 **提示：** 如果 `curl` 和 `wget` 都未安装（如 Debian 最小化系统），先执行 `apt update && apt install -y curl wget`。
 
 ## 添加新脚本
 

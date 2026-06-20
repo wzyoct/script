@@ -29,7 +29,7 @@ bash scripts/debian-vps-setup/debian-vps-setup.sh
 ## 一行命令拉取执行
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh && bash setup.sh
+curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh || wget -O setup.sh https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh && bash setup.sh
 ```
 
 ## 从零开始：重装 Debian 13 + 安全加固
@@ -58,7 +58,7 @@ reboot
 
 ```bash
 ssh -p 2222 root@你的VPS-IP
-curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh && bash setup.sh
+curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh -o setup.sh || wget -O setup.sh https://raw.githubusercontent.com/wzyoct/script/main/scripts/debian-vps-setup/debian-vps-setup.sh && bash setup.sh
 ```
 
 ## 紧急恢复
@@ -71,7 +71,9 @@ bash /root/ssh-restore.sh
 
 ## ⚠️ 注意事项
 
+- 如果 `curl` 和 `wget` 都未安装（Debian 最小化系统），先执行 `apt update && apt install -y curl wget` 再拉取脚本
 - 执行前确保有 VPS 控制台备用访问（VNC/Console）
 - 脚本会自动备份原 SSH 配置到 `/etc/ssh/sshd_config.bak.*`
 - 脚本会自动备份 `sshd_config.d/` 到 `/root/sshd_config.d.bak.*`
 - 修改密钥：编辑脚本中 `BUILTIN_PUB_KEY` 变量
+- 脚本内部已包含自动安装 curl/wget 的逻辑，只需确保能下载到脚本即可

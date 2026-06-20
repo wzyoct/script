@@ -18,7 +18,7 @@ bash scripts/<脚本目录>/<脚本文件> [选项]
 ## 一行命令拉取执行
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/<脚本目录>/<脚本文件> -o <脚本文件> && bash <脚本文件>
+curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/scripts/<脚本目录>/<脚本文件> -o <脚本文件> || wget -O <脚本文件> https://raw.githubusercontent.com/wzyoct/script/main/scripts/<脚本目录>/<脚本文件> && bash <脚本文件>
 ```
 
 ## ⚠️ 注意事项

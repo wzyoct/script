@@ -36,6 +36,16 @@ curl -fsSL https://raw.githubusercontent.com/wzyoct/script/main/debian-vps-setup
 
 ### 第一步：重装系统（在当前 VPS 上执行）
 
+**方式 A：使用密码登录（简单快速）**
+
+```bash
+curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh || wget -O reinstall.sh https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh
+bash reinstall.sh debian 13 --ssh-port 2222 --password "ECMAzfSyVDADvz%T"
+reboot
+```
+
+**方式 B：使用 SSH 密钥登录（更安全）**
+
 ```bash
 curl -O https://raw.githubusercontent.com/bin456789/reinstall/main/reinstall.sh
 bash reinstall.sh debian 13 \

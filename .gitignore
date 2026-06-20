@@ -1,6 +1,9 @@
 # ⚠️ 私钥绝对不能上传！
 .ssh/
 
+# Reasonix 配置
+.reasonix/
+
 # 系统文件
 .DS_Store
 Thumbs.db

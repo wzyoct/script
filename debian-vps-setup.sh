@@ -151,6 +151,9 @@ collect_info() {
 update_system() {
     log_step "步骤 2/7: 系统更新 & 安装基础工具"
 
+    log_info "安装必要工具 (curl/wget)..."
+    run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y curl wget"
+
     log_info "更新软件源..."
     run_cmd "apt update -y"
 
@@ -158,7 +161,7 @@ update_system() {
     run_cmd "DEBIAN_FRONTEND=noninteractive apt upgrade -y"
 
     log_info "安装基础工具..."
-    run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y curl wget vim git htop unzip"
+    run_cmd "DEBIAN_FRONTEND=noninteractive apt install -y vim git htop unzip"
 }
 
 # ============================================================
